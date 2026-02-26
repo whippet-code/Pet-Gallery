@@ -1,4 +1,4 @@
-// Pet Gallery App
+// Pet Gallery App with Voting System
 class PetGallery {
     constructor() {
         this.modal = document.getElementById('modal');
@@ -8,13 +8,22 @@ class PetGallery {
         this.modalName = document.getElementById('modalName');
         this.petCards = document.querySelectorAll('.pet-card');
         
+        // Voting state
+        this.votes = {
+            first: null,
+            second: null,
+            third: null
+        };
+        this.votingActive = false;
+        this.votingPanel = document.getElementById('votingPanel');
+        
         this.init();
     }
     
     init() {
-        // Add click listeners to all pet cards
+        // Add click listeners to all pet cards for voting
         this.petCards.forEach(card => {
-            card.addEventListener('click', (e) => this.openModal(e, card));
+            card.addEventListener('click', (e) => this.handleCardClick(e, card));
         });
         
         // Close modal listeners
@@ -27,6 +36,16 @@ class PetGallery {
                 this.closeModal();
             }
         });
+        
+        // Start voting button
+        const startVotingBtn = document.getElementById('startVotingBtn');
+        if (startVotingBtn) {
+            startVotingBtn.addEventListener('click', () => this.showVotingPanel());
+        }
+        
+        // Voting UI listeners
+        document.getElementById('submitVoteBtn').addEventListener('click', () => this.submitVotes());
+        document.getElementById('clearVotesBtn').addEventListener('click', () => this.clearVotes());
         
         // Add hover effects with mouse tracking
         this.petCards.forEach(card => {
@@ -46,9 +65,31 @@ class PetGallery {
         this.observeCards();
     }
     
-    openModal(event, card) {
+    handleCardClick(event, card) {
         event.preventDefault();
         
+        const petName = card.dataset.petName;
+        const petImage = card.dataset.petImage;
+        
+        // If voting not active, just open modal
+        if (!this.votingActive) {
+            this.openModal(card);
+            return;
+        }
+        
+        // Check if pet is already selected
+        const selectedRank = this.getPetRank(petName);
+        
+        if (selectedRank) {
+            // If already selected, open modal to view
+            this.openModal(card);
+        } else {
+            // Add to next available slot
+            this.addPetToVote(petName, petImage, card);
+        }
+    }
+    
+    openModal(card) {
         const petName = card.dataset.petName;
         const petImage = card.dataset.petImage;
         
@@ -56,6 +97,21 @@ class PetGallery {
         this.modalImage.src = petImage;
         this.modalImage.alt = petName;
         this.modalName.textContent = petName;
+        
+        // Update instruction text based on voting state
+        const instruction = document.getElementById('modalInstruction');
+        if (instruction) {
+            if (this.votingActive) {
+                const rank = this.getPetRank(petName);
+                if (rank) {
+                    instruction.textContent = `${petName} is already in your ${this.getSlotLabel(rank)}! 🎉`;
+                } else {
+                    instruction.textContent = 'Close this and click the card again to add to your voting hand! 🎲';
+                }
+            } else {
+                instruction.textContent = 'What an adorable contestant! Click "Start Voting" to begin selecting your favorites! 🎲';
+            }
+        }
         
         // Randomize stats for fun
         this.randomizeStats();
@@ -66,9 +122,6 @@ class PetGallery {
         
         // Add entrance animation
         this.animateCardEntrance();
-        
-        // Play sound effect (optional - commented out by default)
-        // this.playSound('open');
     }
     
     closeModal() {
@@ -174,6 +227,286 @@ class PetGallery {
         // audio.volume = 0.3;
         // audio.play();
     }
+    
+    // Voting System Methods
+    showVotingPanel() {
+        this.votingActive = true;
+        this.votingPanel.style.display = 'block';
+        
+        // Smooth scroll to voting panel
+        setTimeout(() => {
+            this.votingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
+        // Add entrance animation
+        this.votingPanel.style.animation = 'fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        
+        // Hide start voting button
+        const startBtn = document.getElementById('startVotingBtn');
+        if (startBtn) {
+            startBtn.style.display = 'none';
+        }
+        
+        this.showNotification('Click on 3 pet cards to build your voting hand! 🎲', 'info', 4000);
+    }
+    
+    hideVotingPanel() {
+        // Clear all selections
+        this.clearVotes();
+        
+        // Add fade out animation
+        this.votingPanel.style.animation = 'fadeOut 0.5s ease';
+        
+        setTimeout(() => {
+            this.votingPanel.style.display = 'none';
+            this.votingActive = false;
+            
+            // Show start voting button again
+            const startBtn = document.getElementById('startVotingBtn');
+            if (startBtn) {
+                startBtn.style.display = 'inline-block';
+            }
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+    }
+    
+    getPetRank(petName) {
+        if (this.votes.first === petName) return 'first';
+        if (this.votes.second === petName) return 'second';
+        if (this.votes.third === petName) return 'third';
+        return null;
+    }
+    
+    getNextAvailableSlot() {
+        if (!this.votes.first) return 'first';
+        if (!this.votes.second) return 'second';
+        if (!this.votes.third) return 'third';
+        return null;
+    }
+    
+    addPetToVote(petName, petImage, card) {
+        const slot = this.getNextAvailableSlot();
+        
+        if (!slot) {
+            this.showNotification('You can only select 3 pets! Clear your selections to choose different ones.', 'warning');
+            return;
+        }
+        
+        this.votes[slot] = petName;
+        this.updateVotingSlot(slot, petName, petImage);
+        this.updateCardBadge(card, slot);
+        this.updateSubmitButton();
+        this.showNotification(`${petName} added to ${this.getSlotLabel(slot)}! 🎉`, 'success');
+    }
+    
+    getSlotLabel(slot) {
+        const labels = {
+            first: '1st place',
+            second: '2nd place',
+            third: '3rd place'
+        };
+        return labels[slot];
+    }
+    
+    updateVotingSlot(slot, petName, petImage) {
+        const slotMap = { first: 'slot1', second: 'slot2', third: 'slot3' };
+        const slotElement = document.getElementById(slotMap[slot]);
+        const slotContent = slotElement.querySelector('.slot-content');
+        
+        slotContent.classList.remove('empty');
+        slotContent.classList.add('filled');
+        
+        const badges = {
+            first: '🥇 1st Place',
+            second: '🥈 2nd Place',
+            third: '🥉 3rd Place'
+        };
+        
+        const points = { first: '3 Points', second: '2 Points', third: '1 Point' };
+        
+        slotContent.innerHTML = `
+            <div class="slot-badge">${badges[slot]}</div>
+            <div class="slot-pet-image" style="background-image: url('${petImage}')"></div>
+            <div class="slot-pet-name">${petName}</div>
+            <div class="slot-points">${points[slot]}</div>
+            <button class="slot-remove-btn" onclick="petGallery.removePetFromSlot('${slot}')">×</button>
+        `;
+        
+        slotContent.style.animation = 'slotFill 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    }
+    
+    updateCardBadge(card, slot) {
+        const badge = card.querySelector('.selection-badge');
+        const badges = {
+            first: '🥇 1st',
+            second: '🥈 2nd',
+            third: '🥉 3rd'
+        };
+        
+        badge.textContent = badges[slot];
+        badge.style.display = 'flex';
+        card.classList.add('selected');
+    }
+    
+    removePetFromSlot(slot) {
+        const petName = this.votes[slot];
+        this.votes[slot] = null;
+        
+        // Reset slot UI
+        const slotMap = { first: 'slot1', second: 'slot2', third: 'slot3' };
+        const slotElement = document.getElementById(slotMap[slot]);
+        const slotContent = slotElement.querySelector('.slot-content');
+        
+        slotContent.classList.remove('filled');
+        slotContent.classList.add('empty');
+        
+        const badges = {
+            first: '🥇 1st Place',
+            second: '🥈 2nd Place',
+            third: '🥉 3rd Place'
+        };
+        
+        const points = { first: '3 Points', second: '2 Points', third: '1 Point' };
+        
+        slotContent.innerHTML = `
+            <div class="slot-badge">${badges[slot]}</div>
+            <div class="slot-points">${points[slot]}</div>
+            <div class="slot-placeholder">Click a pet to select</div>
+        `;
+        
+        // Remove badge from card
+        this.petCards.forEach(card => {
+            if (card.dataset.petName === petName) {
+                const badge = card.querySelector('.selection-badge');
+                badge.style.display = 'none';
+                card.classList.remove('selected');
+            }
+        });
+        
+        this.updateSubmitButton();
+        this.showNotification(`${petName} removed!`, 'info');
+    }
+    
+    clearVotes() {
+        ['first', 'second', 'third'].forEach(slot => {
+            if (this.votes[slot]) {
+                this.removePetFromSlot(slot);
+            }
+        });
+        
+        document.getElementById('emailSection').style.display = 'none';
+        document.getElementById('voterEmail').value = '';
+    }
+    
+    updateSubmitButton() {
+        const allSelected = this.votes.first && this.votes.second && this.votes.third;
+        const submitBtn = document.getElementById('submitVoteBtn');
+        const emailSection = document.getElementById('emailSection');
+        
+        if (allSelected) {
+            submitBtn.disabled = false;
+            emailSection.style.display = 'block';
+            emailSection.style.animation = 'fadeInUp 0.5s ease';
+        } else {
+            submitBtn.disabled = true;
+            emailSection.style.display = 'none';
+        }
+    }
+    
+    async submitVotes() {
+        const email = document.getElementById('voterEmail').value.trim();
+        
+        if (!email) {
+            this.showNotification('Please enter your email address!', 'error');
+            return;
+        }
+        
+        if (!this.validateEmail(email)) {
+            this.showNotification('Please enter a valid email address!', 'error');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('submitVoteBtn');
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text').innerHTML = '<span class="btn-icon">⏳</span> Submitting...';
+        
+        try {
+            const response = await fetch('vote-submit.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    firstChoice: this.votes.first,
+                    secondChoice: this.votes.second,
+                    thirdChoice: this.votes.third
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showNotification(data.message, 'success', 5000);
+                
+                // Add confetti effect
+                triggerConfetti();
+                
+                // Hide voting panel and reset after a delay
+                setTimeout(() => {
+                    this.hideVotingPanel();
+                }, 2000);
+            } else {
+                this.showNotification(data.message, 'error', 5000);
+            }
+        } catch (error) {
+            console.error('Vote submission error:', error);
+            this.showNotification('An error occurred. Please try again!', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.querySelector('.btn-text').innerHTML = '<span class="btn-icon">⚡</span> Submit Your Votes <span class="btn-icon">⚡</span>';
+        }
+    }
+    
+    validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
+    showNotification(message, type = 'info', duration = 3000) {
+        // Remove existing notification if any
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span class="notification-icon">${this.getNotificationIcon(type)}</span>
+            <span class="notification-message">${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Trigger animation
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        // Auto remove
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+    }
+    
+    getNotificationIcon(type) {
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        return icons[type] || icons.info;
+    }
 }
 
 // Additional CSS keyframes (add to styles.css if needed)
@@ -193,12 +526,13 @@ styleSheet.textContent = `
 document.head.appendChild(styleSheet);
 
 // Initialize the gallery when DOM is ready
+let petGallery;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        new PetGallery();
+        petGallery = new PetGallery();
     });
 } else {
-    new PetGallery();
+    petGallery = new PetGallery();
 }
 
 // Add smooth page transitions
