@@ -19,9 +19,9 @@ A modern pet portrait gallery with Pokemon-style battle cards, smooth animations
 ## 🚀 Quick Start
 
 ### Requirements
-- PHP 8.0+ with PDO MySQL extension
-- MySQL 5.7+ or MariaDB 10.3+ (for voting system)
+- PHP 8.0+ with PDO SQLite extension (included by default)
 - Modern web browser
+- SQLite 3 (for database inspection, optional)
 
 ### Installation
 
@@ -47,50 +47,51 @@ A modern pet portrait gallery with Pokemon-style battle cards, smooth animations
 
 5. **Open in browser**: `http://localhost:8000`
 
-### Setting Up Voting (Optional)
+### Setting Up Voting
 
-If you want to enable the voting system:
+The voting system uses SQLite - no database server needed!
 
-1. **Create a MySQL database**:
-   ```sql
-   CREATE DATABASE pet_gallery CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
-
-2. **Configure database** in `db-config.php`:
-   ```php
-   define('DB_HOST', 'localhost');
-   define('DB_NAME', 'pet_gallery');
-   define('DB_USER', 'your_username');
-   define('DB_PASS', 'your_password');
-   define('ALLOWED_EMAIL_DOMAIN', 'osbornetech.co.uk');
-   ```
-
-3. **Import schema**:
+1. **Create database**:
    ```bash
-   mysql -u your_username -p pet_gallery < database-setup.sql
+   sqlite3 pet_gallery.db < database-setup-sqlite.sql
    ```
 
-4. **Test voting**: Click pets to select, enter email, submit!
+2. **Set permissions**:
+   ```bash
+   chmod 664 pet_gallery.db
+   ```
 
-**For detailed voting setup instructions, see [VOTING-SETUP.md](VOTING-SETUP.md)**
+3. **Configure email domains** (optional) in `db-config.php`:
+   ```php
+   define('ALLOWED_EMAIL_DOMAINS', [
+       'osbornetech.co.uk',
+       'osbornetechnologies.co.uk'
+   ]);
+   ```
+
+4. **Test voting**: Click "Start Voting", select 3 pets, enter email, submit!
+
+**For detailed instructions, see [VOTING-SETUP.md](VOTING-SETUP.md)**
 
 ## 📁 Project Structure
 
 ```
 Pet-Gallery/
-├── index.php              # Main gallery page with voting interface
-├── leaderboard.php        # Results and rankings page
-├── vote-submit.php        # Backend vote processing
-├── db-config.php          # Database configuration
-├── database-setup.sql     # Database schema
-├── styles.css             # All styling, animations, and effects
-├── script.js              # Interactive features and voting logic
-├── pets/                  # Place all pet images here
+├── index.php                  # Main gallery page with voting interface
+├── leaderboard.php            # Results and rankings page
+├── vote-submit.php            # Backend vote processing
+├── db-config.php              # Database configuration (SQLite)
+├── database-setup-sqlite.sql  # SQLite database schema
+├── pet_gallery.db             # SQLite database file (auto-created)
+├── styles.css                 # All styling, animations, and effects
+├── script.js                  # Interactive features and voting logic
+├── pets/                      # Place all pet images here
 │   ├── Barney.jpg
 │   ├── Fluffy.png
 │   └── ...
-├── README.md              # This file
-└── VOTING-SETUP.md        # Detailed voting setup guide
+├── README.md                  # This file
+├── VOTING-SETUP.md            # Detailed voting setup guide
+└── VOTING-FLOW.md             # User journey and interaction guide
 ```
 
 ## 🎨 Customisation

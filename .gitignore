@@ -27,6 +27,11 @@ composer.lock
 config.local.php
 db-config.php
 
+# SQLite database (contains votes - don't commit to version control)
+pet_gallery.db
+pet_gallery.db-shm
+pet_gallery.db-wal
+
 # Logs
 *.log
 error_log
