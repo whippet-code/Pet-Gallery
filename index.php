@@ -61,8 +61,84 @@ $pets = getPetImages($imagesFolder);
                     <span class="stat-label">Contestants</span>
                 </div>
             </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+                <button id="startVotingBtn" class="action-button start-voting-btn">
+                    <span class="btn-bg"></span>
+                    <span class="btn-text">
+                        <span class="btn-icon">🗳️</span>
+                        Start Voting
+                        <span class="btn-icon">⚡</span>
+                    </span>
+                </button>
+                <a href="leaderboard.php" class="action-button leaderboard-link">
+                    🏆 View Leaderboard
+                </a>
+            </div>
         </div>
     </header>
+
+    <!-- Voting Panel (hidden by default) -->
+    <div class="voting-panel" id="votingPanel" style="display: none;">
+        <div class="voting-panel-content">
+            <div class="voting-header">
+                <h2 class="voting-title">
+                    <span class="title-icon">🗳️</span>
+                    Your Podium Trio
+                    <span class="title-icon">⚡</span>
+                </h2>
+                <p class="voting-instruction">Select 3 pets to build your ultimate team!</p>
+            </div>
+            
+            <div class="voting-slots">
+                <div class="vote-slot" data-rank="1" id="slot1">
+                    <div class="slot-content empty">
+                        <div class="slot-badge">🥇 1st Place</div>
+                        <div class="slot-points">3 Points</div>
+                        <div class="slot-placeholder">Click a pet to select</div>
+                    </div>
+                </div>
+                <div class="vote-slot" data-rank="2" id="slot2">
+                    <div class="slot-content empty">
+                        <div class="slot-badge">🥈 2nd Place</div>
+                        <div class="slot-points">2 Points</div>
+                        <div class="slot-placeholder">Click a pet to select</div>
+                    </div>
+                </div>
+                <div class="vote-slot" data-rank="3" id="slot3">
+                    <div class="slot-content empty">
+                        <div class="slot-badge">🥉 3rd Place</div>
+                        <div class="slot-points">1 Point</div>
+                        <div class="slot-placeholder">Click a pet to select</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="voting-email-section" id="emailSection" style="display: none;">
+                <div class="email-input-wrapper">
+                    <label for="voterEmail" class="email-label">Your Email (required)</label>
+                    <input 
+                        type="email" 
+                        id="voterEmail" 
+                        class="email-input" 
+                        placeholder="name@osbornetech.co.uk or name@osbornetechnologies.co.uk"
+                        required>
+                </div>
+            </div>
+            
+            <button class="vote-submit-btn" id="submitVoteBtn" disabled>
+                <span class="btn-bg"></span>
+                <span class="btn-text">
+                    <span class="btn-icon">⚡</span>
+                    Submit Your Votes
+                    <span class="btn-icon">⚡</span>
+                </span>
+            </button>
+            
+            <button class="vote-clear-btn" id="clearVotesBtn">
+                <span class="btn-icon">🔄</span> Clear Selections
+            </button>
+        </div>
+    </div>
 
     <main class="gallery-container">
         <div class="gallery" id="gallery">
@@ -74,6 +150,7 @@ $pets = getPetImages($imagesFolder);
                  style="--delay: <?php echo $index * 0.05; ?>s">
                 <div class="card-inner">
                     <div class="card-shine"></div>
+                    <div class="selection-badge" style="display: none;"></div>
                     <div class="card-image-wrapper">
                         <img src="<?php echo htmlspecialchars($pet['path']); ?>" 
                              alt="<?php echo htmlspecialchars($pet['name']); ?>"
@@ -134,18 +211,7 @@ $pets = getPetImages($imagesFolder);
                 </div>
                 
                 <div class="card-actions">
-                    <a href="<?php echo htmlspecialchars($votingUrl); ?>" 
-                       class="vote-button" 
-                       id="voteButton"
-                       target="_blank">
-                        <span class="button-bg"></span>
-                        <span class="button-text">
-                            <span class="button-icon">⚡</span>
-                            VOTE NOW (it's free)
-                            <span class="button-icon">⚡</span>
-                        </span>
-                    </a>
-                    <p class="vote-subtitle">Help us raise money for Barnsley Hospice! 🎉</p>
+                    <p class="modal-instruction" id="modalInstruction">What an adorable contestant! Click "Start Voting" to begin selecting your favorites! 🎲</p>
                 </div>
             </div>
         </div>

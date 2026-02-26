@@ -4,19 +4,23 @@ A modern pet portrait gallery with Pokemon-style battle cards, smooth animations
 
 ## ✨ Features
 
+- **🗳️ Full Voting System** - Interactive "hand of cards" voting interface with email validation
+- **🎮 Gamified Experience** - Select your top 3 pets with ranked voting (3/2/1 points)
+- **🏆 Live Leaderboard** - Real-time results display with vote breakdowns
 - **🎨 Modern Mobile Game Aesthetic** - Bold typography, vibrant gradients, and playful design
 - **🎴 Trading Card Design** - Pokemon/card battler inspired modal cards with holographic effects
 - **⚡ Smooth Animations** - Beautiful micro-interactions, view transitions, and tilt effects
 - **📱 Fully Responsive** - Works beautifully on all devices
 - **🔄 Auto-Updating Gallery** - Dynamically generates gallery from image folder
 - **🎯 SPA Feel** - Smooth, app-like experience without page reloads
-- **♿ Accessible** - Keyboard navigation (ESC to close modal)
+- **♀ Accessible** - Keyboard navigation (ESC to close modal)
 - **🎊 Easter Egg** - Konami code for confetti effect! (↑↑↓↓←→←→BA)
 
 ## 🚀 Quick Start
 
 ### Requirements
-- PHP 8.3+ (for local testing, any web server will work)
+- PHP 8.0+ with PDO MySQL extension
+- MySQL 5.7+ or MariaDB 10.3+ (for voting system)
 - Modern web browser
 
 ### Installation
@@ -43,18 +47,50 @@ A modern pet portrait gallery with Pokemon-style battle cards, smooth animations
 
 5. **Open in browser**: `http://localhost:8000`
 
+### Setting Up Voting (Optional)
+
+If you want to enable the voting system:
+
+1. **Create a MySQL database**:
+   ```sql
+   CREATE DATABASE pet_gallery CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+2. **Configure database** in `db-config.php`:
+   ```php
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'pet_gallery');
+   define('DB_USER', 'your_username');
+   define('DB_PASS', 'your_password');
+   define('ALLOWED_EMAIL_DOMAIN', 'osbornetech.co.uk');
+   ```
+
+3. **Import schema**:
+   ```bash
+   mysql -u your_username -p pet_gallery < database-setup.sql
+   ```
+
+4. **Test voting**: Click pets to select, enter email, submit!
+
+**For detailed voting setup instructions, see [VOTING-SETUP.md](VOTING-SETUP.md)**
+
 ## 📁 Project Structure
 
 ```
 Pet-Gallery/
-├── index.php       # Main gallery page with PHP logic
-├── styles.css      # All styling, animations, and effects
-├── script.js       # Interactive features and animations
-├── pets/           # Place all pet images here
+├── index.php              # Main gallery page with voting interface
+├── leaderboard.php        # Results and rankings page
+├── vote-submit.php        # Backend vote processing
+├── db-config.php          # Database configuration
+├── database-setup.sql     # Database schema
+├── styles.css             # All styling, animations, and effects
+├── script.js              # Interactive features and voting logic
+├── pets/                  # Place all pet images here
 │   ├── Barney.jpg
 │   ├── Fluffy.png
 │   └── ...
-└── README.md       # This file
+├── README.md              # This file
+└── VOTING-SETUP.md        # Detailed voting setup guide
 ```
 
 ## 🎨 Customisation
