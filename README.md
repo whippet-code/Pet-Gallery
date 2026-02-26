@@ -98,14 +98,14 @@ Pet-Gallery/
 
 ## 🎨 Customisation
 
-### Colors & Gradients
+### Colours & Gradients
 Edit CSS variables in `styles.css` (lines 1-14):
 ```css
 :root {
     --primary: #ff6b6b;
     --secondary: #4ecdc4;
     --accent: #ffe66d;
-    /* ... more colors */
+    /* ... more colours */
 }
 ```
 
