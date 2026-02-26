@@ -1,10 +1,10 @@
 # 🐾 Pet Gallery - Ultimate Pet Battle for Charity
 
-A modern, Gen-Z inspired pet portrait gallery with Pokemon-style battle cards, smooth animations, and a slick SPA-like feel. Built for a charity pet competition.
+A modern pet portrait gallery with Pokemon-style battle cards, smooth animations, and a slick SPA-like feel. Built for a Osborne Tech / Barnsley Hospice charity pet competition.
 
 ## ✨ Features
 
-- **🎨 Modern Gen-Z Aesthetic** - Bold typography, vibrant gradients, and playful design
+- **🎨 Modern Mobile Game Aesthetic** - Bold typography, vibrant gradients, and playful design
 - **🎴 Trading Card Design** - Pokemon/card battler inspired modal cards with holographic effects
 - **⚡ Smooth Animations** - Beautiful micro-interactions, view transitions, and tilt effects
 - **📱 Fully Responsive** - Works beautifully on all devices
@@ -16,7 +16,7 @@ A modern, Gen-Z inspired pet portrait gallery with Pokemon-style battle cards, s
 ## 🚀 Quick Start
 
 ### Requirements
-- PHP 7.4+ (for local testing, any web server will work)
+- PHP 8.3+ (for local testing, any web server will work)
 - Modern web browser
 
 ### Installation
@@ -57,7 +57,7 @@ Pet-Gallery/
 └── README.md       # This file
 ```
 
-## 🎨 Customization
+## 🎨 Customisation
 
 ### Colors & Gradients
 Edit CSS variables in `styles.css` (lines 1-14):
@@ -88,7 +88,7 @@ Edit `index.php`:
 Modify the stats shown in the modal card (`index.php`, lines 118-132):
 - Change icons (💖, ⚡, ✨)
 - Change stat names (Cuteness, Charm, Floof)
-- Stats are randomized (80-100%) on each card open
+- Stats are randomised (80-100%) on each card open
 
 ## 🎯 How It Works
 
@@ -119,7 +119,7 @@ Modify the stats shown in the modal card (`index.php`, lines 118-132):
 - Lazy loading for images
 - Intersection Observer for scroll animations
 - CSS transforms for smooth 60fps animations
-- Optimized hover effects
+- Optimised hover effects
 
 ## 🌐 Deployment
 
