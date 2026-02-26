@@ -4,43 +4,41 @@ This guide will help you set up the voting system for your Pet Gallery competiti
 
 ## 📋 Prerequisites
 
-- PHP 8.0+ with PDO MySQL extension
-- MySQL 5.7+ or MariaDB 10.3+
+- PHP 8.0+ with PDO SQLite extension (included by default)
 - Web server (Apache, Nginx, or PHP's built-in server for testing)
+- SQLite 3 (for command-line inspection, optional)
 
 ## 🚀 Quick Setup
 
-### 1. Database Configuration
+### 1. Create Database
 
-First, create a MySQL database for the project:
-
-```sql
-CREATE DATABASE pet_gallery CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 2. Configure Database Connection
-
-Edit `db-config.php` and update these values:
-
-```php
-define('DB_HOST', 'localhost');          // Your database host
-define('DB_NAME', 'pet_gallery');        // Your database name
-define('DB_USER', 'your_username');      // Your database username
-define('DB_PASS', 'your_password');      // Your database password
-
-// Set your company email domain
-define('ALLOWED_EMAIL_DOMAIN', 'osbornetech.co.uk');
-```
-
-### 3. Import Database Schema
-
-Run the SQL schema to create tables and views:
+Run the SQLite schema to create the database:
 
 ```bash
-mysql -u your_username -p pet_gallery < database-setup.sql
+sqlite3 pet_gallery.db < database-setup-sqlite.sql
 ```
 
-Or manually execute the SQL in `database-setup.sql` through phpMyAdmin or MySQL Workbench.
+This creates a `pet_gallery.db` file with all necessary tables and views.
+
+### 2. Set Permissions
+
+Make sure the database file is writable by the web server:
+
+```bash
+chmod 664 pet_gallery.db
+chmod 775 .  # Directory must be writable for SQLite lock files
+```
+
+### 3. Configure Email Domains (Optional)
+
+Edit `db-config.php` to update allowed email domains:
+
+```php
+define('ALLOWED_EMAIL_DOMAINS', [
+    'osbornetech.co.uk',
+    'osbornetechnologies.co.uk'
+]);
+```
 
 ### 4. Test the Setup
 
@@ -130,22 +128,29 @@ Customize notification appearance in `styles.css` starting at line 903. Four typ
 
 ### Votes Not Submitting
 
-1. **Check Database Connection**: Verify credentials in `db-config.php`
-2. **Check Browser Console**: Open DevTools and look for JavaScript errors
-3. **Check PHP Errors**: Look in your PHP error log
-4. **Test vote-submit.php**: Navigate directly to see any PHP errors
+1. **Check Database File**: Verify `pet_gallery.db` exists and is writable
+2. **Check Permissions**: Run `ls -l pet_gallery.db` to verify permissions (should be 664)
+3. **Check Browser Console**: Open DevTools and look for JavaScript errors
+4. **Check PHP Errors**: Look in your PHP error log
+5. **Test Connection**: Run `php -r "require 'db-config.php'; getDbConnection();"`
 
 ### Leaderboard Not Showing Results
 
-1. **Verify Database View**: Check that the `leaderboard` view was created
-2. **Check Permissions**: Ensure database user has SELECT permissions
-3. **Test Query**: Run the view query directly in MySQL
+1. **Verify Database View**: Run `sqlite3 pet_gallery.db ".schema leaderboard"`
+2. **Check Votes**: Run `sqlite3 pet_gallery.db "SELECT COUNT(*) FROM votes;"`
+3. **Test View**: Run `sqlite3 pet_gallery.db "SELECT * FROM leaderboard;"`
 
 ### Email Domain Rejection
 
-1. **Check Domain Setting**: Verify `ALLOWED_EMAIL_DOMAIN` in `db-config.php`
+1. **Check Domain Setting**: Verify `ALLOWED_EMAIL_DOMAINS` array in `db-config.php`
 2. **Case Sensitivity**: Domain comparison is case-insensitive
 3. **Subdomains**: Currently exact match only (e.g., `mail.company.com` ≠ `company.com`)
+
+### Database File Permissions
+
+1. **File Not Writable**: Run `chmod 664 pet_gallery.db`
+2. **Directory Not Writable**: Run `chmod 775 .` (SQLite needs to create lock files)
+3. **Web Server User**: Ensure web server user (www-data, apache, nginx) can write to file
 
 ### CSS/JS Not Loading
 
@@ -160,6 +165,76 @@ Customize notification appearance in `styles.css` starting at line 903. Four typ
 - SQL injection protection via prepared statements
 - XSS protection via `htmlspecialchars()`
 - Input validation on both client and server side
+
+## 🔍 Inspecting the Database
+
+### Command Line
+
+View all votes:
+```bash
+sqlite3 pet_gallery.db "SELECT * FROM votes;"
+```
+
+View leaderboard:
+```bash
+sqlite3 pet_gallery.db "SELECT * FROM leaderboard;"
+```
+
+Count total votes:
+```bash
+sqlite3 pet_gallery.db "SELECT COUNT(*) FROM votes;"
+```
+
+Interactive mode:
+```bash
+sqlite3 pet_gallery.db
+# Then use SQL commands:
+# .tables - list tables
+# .schema votes - show table structure
+# SELECT * FROM votes; - view data
+# .quit - exit
+```
+
+### GUI Tools
+
+Download the `pet_gallery.db` file and open with:
+
+1. **[DB Browser for SQLite](https://sqlitebrowser.org/)** (Free, recommended)
+   - Drag and drop the .db file
+   - Browse data, run queries, export to CSV
+
+2. **[TablePlus](https://tableplus.com/)** (Beautiful UI)
+   - File → Open → Select pet_gallery.db
+   - Great for quick inspection
+
+3. **[SQLiteStudio](https://sqlitestudio.pl/)** (Free, cross-platform)
+   - Full-featured database manager
+
+4. **Online Viewers**
+   - [sqliteviewer.app](https://sqliteviewer.app/) - Upload and view in browser
+
+### Export Votes
+
+Export to CSV:
+```bash
+sqlite3 pet_gallery.db <<EOF
+.headers on
+.mode csv
+.output votes_export.csv
+SELECT * FROM votes;
+.quit
+EOF
+```
+
+Export to JSON:
+```bash
+sqlite3 pet_gallery.db <<EOF
+.mode json
+.output votes_export.json
+SELECT * FROM votes;
+.quit
+EOF
+```
 
 ## 📊 Database Schema
 

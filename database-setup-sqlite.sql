@@ -1,23 +1,25 @@
--- Pet Gallery Voting Database Schema
+-- Pet Gallery Voting Database Schema (SQLite)
 -- This creates the necessary tables for the voting system
 
 -- Votes table: stores individual votes with email validation
 CREATE TABLE IF NOT EXISTS votes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    first_choice VARCHAR(255) NOT NULL,
-    second_choice VARCHAR(255) NOT NULL,
-    third_choice VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip_address VARCHAR(45) NULL,
-    user_agent TEXT NULL,
-    INDEX idx_email (email),
-    INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    first_choice TEXT NOT NULL,
+    second_choice TEXT NOT NULL,
+    third_choice TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ip_address TEXT,
+    user_agent TEXT
+);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_email ON votes(email);
+CREATE INDEX IF NOT EXISTS idx_created_at ON votes(created_at);
 
 -- Leaderboard view: calculates total points for each pet
 -- Points: 3 for 1st place, 2 for 2nd place, 1 for 3rd place
-CREATE OR REPLACE VIEW leaderboard AS
+CREATE VIEW IF NOT EXISTS leaderboard AS
 SELECT 
     pet_name,
     SUM(points) as total_points,

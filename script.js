@@ -372,8 +372,8 @@ class PetGallery {
         
         slotContent.innerHTML = `
             <div class="slot-badge">${badges[slot]}</div>
-            <div class="slot-points">${points[slot]}</div>
             <div class="slot-placeholder">Click a pet to select</div>
+            <div class="slot-points">${points[slot]}</div>
         `;
         
         // Remove badge from card
