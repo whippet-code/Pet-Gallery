@@ -2,6 +2,8 @@
 
 A modern pet portrait gallery with Pokemon-style battle cards, smooth animations, and a slick SPA-like feel. Built for a Osborne Tech / Barnsley Hospice charity pet competition.
 
+![Screen-Shot](Pet-Gallery.jpg)
+
 ## ✨ Features
 
 - **🗳️ Full Voting System** - Interactive "hand of cards" voting interface with email validation
