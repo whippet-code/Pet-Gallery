@@ -220,12 +220,92 @@ class PetGallery {
         });
     }
     
-    // Optional: Add sound effects
+    // Sound Effect Methods
+    initAudioContext() {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return this.audioContext;
+    }
+    
     playSound(type) {
-        // You can add audio files and play them here
-        // const audio = new Audio(`sounds/${type}.mp3`);
-        // audio.volume = 0.3;
-        // audio.play();
+        try {
+            // First try to play actual audio file if it exists
+            const audio = new Audio(`sounds/${type}.mp3`);
+            audio.volume = 0.3;
+            audio.play().catch(() => {
+                // Fallback to Web Audio API generated sounds if file not found
+                this.playSynthSound(type);
+            });
+        } catch (e) {
+            // Fallback to Web Audio API if Audio element fails
+            this.playSynthSound(type);
+        }
+    }
+    
+    playSynthSound(type) {
+        const ctx = this.initAudioContext();
+        const now = ctx.currentTime;
+        
+        if (type === 'cardSelect') {
+            this.playCardSelectSound(ctx, now);
+        } else if (type === 'submit') {
+            this.playSubmissionSound(ctx, now);
+        }
+    }
+    
+    playCardSelectSound(ctx, now) {
+        // Pleasant two-note chime for card selection
+        // First note - higher pitch
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.frequency.value = 554; // C#5
+        osc1.type = 'sine';
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        
+        osc1.start(now);
+        osc1.stop(now + 0.2);
+        
+        // Second note - lower pitch, slightly delayed
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.frequency.value = 440; // A4
+        osc2.type = 'sine';
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        gain2.gain.setValueAtTime(0, now + 0.05);
+        gain2.gain.linearRampToValueAtTime(0.3, now + 0.1);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        
+        osc2.start(now + 0.05);
+        osc2.stop(now + 0.3);
+    }
+    
+    playSubmissionSound(ctx, now) {
+        // Triumphant ascending notes for successful submission
+        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+        
+        notes.forEach((freq, index) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            const startTime = now + (index * 0.1);
+            const duration = 0.3;
+            
+            gain.gain.setValueAtTime(0.25, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+            
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        });
     }
     
     // Voting System Methods
@@ -298,6 +378,10 @@ class PetGallery {
         this.updateVotingSlot(slot, petName, petImage);
         this.updateCardBadge(card, slot);
         this.updateSubmitButton();
+        
+        // Play card selection sound
+        this.playSound('cardSelect');
+        
         this.showNotification(`${petName} added to ${this.getSlotLabel(slot)}! 🎉`, 'success');
     }
     
@@ -449,6 +533,9 @@ class PetGallery {
             const data = await response.json();
             
             if (data.success) {
+                // Play submission success sound
+                this.playSound('submit');
+                
                 this.showNotification(data.message, 'success', 5000);
                 
                 // Add confetti effect
