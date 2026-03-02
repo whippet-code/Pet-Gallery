@@ -172,7 +172,7 @@ $pets = getPetImages($imagesFolder);
         <div class="modal-backdrop"></div>
         <div class="modal-content">
             <button class="modal-close" id="modalClose">
-                <span class="close-icon">✕</span>
+                <span class="close-icon"></span>
             </button>
             
             <div class="battle-card">
