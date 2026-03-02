@@ -292,7 +292,7 @@ body::before {
     position: relative;
     max-width: 600px;
     width: 90%;
-    max-height: 90vh;
+    max-height: 95vh;
     z-index: 1001;
     transform: scale(0.8) translateY(50px);
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -573,7 +573,151 @@ body::before {
     z-index: 2;
 }
 
-/* Responsive */
+/* Height-based responsive (laptops, ultrawide monitors with shorter heights) */
+@media (max-height: 900px) {
+    .modal-content {
+        max-height: 95vh;
+        padding: 10px;
+    }
+    
+    .modal-close {
+        top: -40px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+    }
+    
+    .battle-card {
+        padding: 1.5rem;
+    }
+    
+    .card-header {
+        margin-bottom: 1rem;
+    }
+    
+    .card-image-container {
+        aspect-ratio: 16/9;
+        margin-bottom: 1rem;
+    }
+    
+    .modal-pet-name {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-stats {
+        gap: 0.7rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-height: 750px) {
+    .modal-content {
+        max-height: 98vh;
+        padding: 5px;
+        overflow-y: auto;
+    }
+    
+    .modal-close {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1002;
+    }
+    
+    .battle-card {
+        padding: 1.2rem;
+    }
+    
+    .card-header {
+        margin-bottom: 0.8rem;
+    }
+    
+    .card-type {
+        font-size: 0.8rem;
+    }
+    
+    .card-stars {
+        font-size: 1rem;
+    }
+    
+    .card-image-container {
+        aspect-ratio: 2/1;
+        margin-bottom: 0.8rem;
+    }
+    
+    .modal-pet-name {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .card-stats {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat {
+        grid-template-columns: 25px 80px 1fr;
+        gap: 0.6rem;
+    }
+    
+    .stat-icon {
+        font-size: 1.1rem;
+    }
+    
+    .stat-text {
+        font-size: 0.85rem;
+    }
+    
+    .stat-bar {
+        height: 8px;
+    }
+    
+    .modal-instruction {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}
+
+@media (max-height: 650px) {
+    .modal-content {
+        max-height: 100vh;
+    }
+    
+    .battle-card {
+        padding: 1rem;
+    }
+    
+    .card-header {
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-image-container {
+        aspect-ratio: 3/1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .modal-pet-name {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-stats {
+        gap: 0.4rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .stat-bar {
+        height: 6px;
+    }
+    
+    .modal-instruction {
+        font-size: 0.9rem;
+        padding: 0.6rem;
+    }
+}
+
+/* Width-based responsive */
 @media (max-width: 768px) {
     .gallery {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1114,6 +1258,25 @@ body::before {
 
 .voting-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal Content Scrollbar */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* Global Scrollbar */
