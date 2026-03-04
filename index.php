@@ -1,4 +1,13 @@
 <?php
+
+// Redirect until live 2026-03-11T08:30:00Z
+$launchDate = new DateTime('2026-03-11T08:30:00Z');
+$currentDate = new DateTime();
+if ($currentDate < $launchDate) {
+    header('Location: coming-soon.php');
+    exit();
+}
+
 // Configuration
 $imagesFolder = __DIR__ . '/pets';
 $votingUrl = 'https://your-voting-page.com';
