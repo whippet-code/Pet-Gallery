@@ -376,7 +376,7 @@ body::before {
 
 .card-image-container {
     position: relative;
-    aspect-ratio: 6/5;
+    aspect-ratio: 1/1;
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 1.5rem;
